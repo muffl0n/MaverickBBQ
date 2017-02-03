@@ -1,58 +1,19 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-# maverick.py
-# Receives Wireless BBQ Thermometer Telegrams via RF-Receiver
-#
-# (c) Martin Raatz, 2016
-# Changed from fix offset to calculating the min and max length of the pulses based on Header AA99
-# the pulswidth changes with every transmission on my ET733
-# Checksum is same on ET732 and 733
-#
-# (c) Björn Schrader, 2015
-# Code based on
-# https://github.com/martinr63/OregonPi
-# https://forums.adafruit.com/viewtopic.php?f=8&t=25414
-# http://www.grillsportverein.de/forum/threads/wlan-maverick-bbq-thermometer-raspberry-pi-edition.232283/
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the "Software"), to deal in the Software without restriction, including without
-# limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so, subject to the following
-# conditions:
-
-# The above copyright notice and this permission notice shall be included in all copies or substantial
-# portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-# LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 import time
 import pigpio
 import argparse
-import copy
 import queue
 import threading
 import math
-import random
-import string
-import os
-import quart
 import jsonwriter
 import protocol
 
-import json
-
 parser = argparse.ArgumentParser(description='Receives Wireless BBQ Thermometer Telegrams via RF-Receiver')
-parser.add_argument('--json', nargs='?', const='maverick.json', help='Writes a JSON file')
 parser.add_argument('--debug', action='store_true', help='Generates additional debugging Output')
 parser.add_argument('--pin', default=18, type=int, help='Sets the Pin number')
 parser.add_argument('--nosync', action='store_true', help='Always register new IDs')
-parser.add_argument('--fahrenheit', action='store_true', help='Sets the Output to Fahrenheit')
-parser.add_argument('--noappend', action='store_true', help='Don´t append to file')
 parser.add_argument('--verbose', action='store_true', help='Print more Information to stdout')
 
 options = parser.parse_args()
@@ -83,33 +44,6 @@ packet_queue = queue.Queue()
 
 # Liste der Sender für die Synchronisierung
 unit_list = {}
-
-def get_data(bitlist):
-    # Liest die Sensordaten aus dem Datenpaket aus
-    sensor1 = 0
-    sensor2 = 0
-
-    for i in range(5):
-        startbit = (4 - i) * 4
-        sensor1 += quart.quart(bitlist[startbit + 32:startbit + 32 + 4]) * (1 << (2 * i))
-        sensor2 += quart.quart(bitlist[startbit + 52:startbit + 52 + 4]) * (1 << (2 * i))
-
-    if sensor1 == 0:
-        sensor1 = ''
-    else:
-        sensor1 -= 532
-        if options.fahrenheit:
-            sensor1 = (((sensor1 * 9) / 5) + 32)
-
-    if sensor2 == 0:
-        sensor2 = ''
-    else:
-        sensor2 -= 532
-        if options.fahrenheit:
-            sensor2 = (((sensor2 * 9) / 5) + 32)
-
-    return [sensor1, sensor2]
-
 
 def pinchange(gpio, level, tick):
     # Interruptroutine
@@ -337,14 +271,11 @@ def worker():
     print('Main task running')
     # Hauptthread, wertet empfangene Pakete aus und verteilt an die anderen Queues
     global unit_list
-    if options.fahrenheit:
-        unit = 'F'
-    else:
-        unit = '°C'
+    unit = '°C'
     while True:
         item_time, item = packet_queue.get()
         type, chksum_is = protocol.chksum(item)
-        temp1, temp2 = get_data(item)
+        temp1, temp2 = protocol.get_data(item)
         state = protocol.get_state(item)
         json_queue.put((item_time, chksum_is, type, temp1, temp2))
         if options.verbose:
