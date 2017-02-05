@@ -78,20 +78,26 @@ Data pin from your receiver to GPIO 18 on your raspberry. GND and Power accordin
 ## Install as service
 
 Copy the bbq.service file to:
+
 `/etc/systemd/system/bbq.service`
  
 Reload systemd: 
+
 `sudo systemctl daemon-reload`
  
 Enable the service:
+
 `sudo systemctl enable bbq.service`
 
 Start the service:
+
 `sudo systemctl start bbq.service`
 
 Check Log:
+
 `sudo journalctl --unit=bbq`
-`computerbildtail -f /var/log/syslog | grep bbq`
+
+`tail -f /var/log/syslog | grep bbq`
 
 
  
