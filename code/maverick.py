@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-import time
-import pigpio
 import argparse
 import queue
 import threading
+import time
+
 import jsonwriter
+import pigpio
 import protocol
-import pinchangehandler
+
+from code import pinchangehandler
 
 parser = argparse.ArgumentParser(description='Receives Wireless BBQ Thermometer Telegrams via RF-Receiver')
 parser.add_argument('--pin', default=18, type=int, help='Sets the Pin number')
