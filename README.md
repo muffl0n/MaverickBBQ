@@ -73,7 +73,4 @@ Data pin from your receiver to GPIO 18 on your raspberry. GND and Power accordin
 ```
 
 # Usage 
-
 `maverick.py`
-
-Receives Wireless BBQ Thermometer Telegrams via RF-Receiver

@@ -122,7 +122,7 @@
           "x-axis": true,
           "y-axis": true,
           "y_formats": [
-            "short",
+            "celsius",
             "short"
           ]
         }
@@ -146,7 +146,7 @@
           "datasource": "bbq",
           "editable": true,
           "error": false,
-          "format": "none",
+          "format": "celsius",
           "id": 2,
           "interval": null,
           "isNew": true,
@@ -217,7 +217,7 @@
           "datasource": "bbq",
           "editable": true,
           "error": false,
-          "format": "none",
+          "format": "celsius",
           "id": 3,
           "interval": null,
           "isNew": true,
@@ -318,6 +318,6 @@
     "list": []
   },
   "schemaVersion": 8,
-  "version": 11,
+  "version": 12,
   "links": []
 }
