@@ -1,4 +1,4 @@
-from code import quart
+import quart
 
 
 def calc_chksum(bitlist):

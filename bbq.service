@@ -1,0 +1,15 @@
+[Unit]
+Description=BBQ
+
+[Service]
+Type=simple
+TimeoutStartSec=0
+WorkingDirectory=/home/pi/MaverickBBQ-master/code
+ExecStart=/home/pi/MaverickBBQ-master/code/maverick.py
+Restart=always
+SyslogIdentifier=bbq
+StandardOutput=syslog+console
+StandardError=syslog+console
+
+[Install]
+WantedBy=multi-user.target

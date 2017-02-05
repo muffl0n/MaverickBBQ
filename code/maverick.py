@@ -9,8 +9,7 @@ import time
 import jsonwriter
 import pigpio
 import protocol
-
-from code import pinchangehandler
+import pinchangehandler
 
 parser = argparse.ArgumentParser(description='Receives Wireless BBQ Thermometer Telegrams via RF-Receiver')
 parser.add_argument('--pin', default=18, type=int, help='Sets the Pin number')
