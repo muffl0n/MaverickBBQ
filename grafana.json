@@ -79,7 +79,7 @@
                   "type": "avg"
                 }
               ],
-              "query": "*",
+              "query": "temperature_1:>0",
               "refId": "A",
               "timeField": "created"
             },
@@ -105,7 +105,7 @@
                   "type": "avg"
                 }
               ],
-              "query": "*",
+              "query": "temperature_2:>0",
               "refId": "B",
               "timeField": "created"
             }
@@ -136,12 +136,12 @@
       "panels": [
         {
           "cacheTimeout": null,
-          "colorBackground": false,
+          "colorBackground": true,
           "colorValue": false,
           "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
+            "rgba(5, 9, 34, 0.9)",
+            "rgba(0, 108, 9, 0.89)",
+            "rgba(255, 0, 0, 0.97)"
           ],
           "datasource": "bbq",
           "editable": true,
@@ -154,8 +154,8 @@
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
+          "postfix": " / 90 °C ",
+          "postfixFontSize": "80%",
           "prefix": "",
           "prefixFontSize": "50%",
           "span": 6,
@@ -173,7 +173,7 @@
                   "id": "2",
                   "settings": {
                     "interval": "auto",
-                    "min_doc_count": 0
+                    "min_doc_count": 1
                   },
                   "type": "date_histogram"
                 }
@@ -189,11 +189,13 @@
                 }
               ],
               "refId": "A",
-              "timeField": "created"
+              "timeField": "created",
+              "query": "temperature_1:>0",
+              "hide": false
             }
           ],
-          "thresholds": "",
-          "title": "AVG Temp1",
+          "thresholds": "0,89,93",
+          "title": "Kerntemperatur Pulled Pork",
           "type": "singlestat",
           "valueFontSize": "80%",
           "valueMaps": [
@@ -203,15 +205,16 @@
               "value": "null"
             }
           ],
-          "valueName": "avg"
+          "valueName": "avg",
+          "timeFrom": "1m"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
+          "colorBackground": true,
           "colorValue": false,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
+            "rgba(0, 106, 31, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
           "datasource": "bbq",
@@ -259,13 +262,13 @@
                   "type": "avg"
                 }
               ],
-              "query": "*",
+              "query": "temperature_2:>0",
               "refId": "A",
               "timeField": "created"
             }
           ],
-          "thresholds": "",
-          "title": "AVG Temp2",
+          "thresholds": "0,100,125",
+          "title": "Smoker Temperatur",
           "type": "singlestat",
           "valueFontSize": "80%",
           "valueMaps": [
@@ -275,17 +278,101 @@
               "value": "null"
             }
           ],
-          "valueName": "avg"
+          "valueName": "avg",
+          "timeFrom": "1m"
         }
       ],
       "title": "New row"
+    },
+    {
+      "title": "New row",
+      "height": "250px",
+      "editable": true,
+      "collapse": false,
+      "panels": [
+        {
+          "title": "Durchschnitt letzte Stunde Smoker Temp",
+          "error": false,
+          "span": 12,
+          "editable": true,
+          "type": "singlestat",
+          "isNew": true,
+          "id": 4,
+          "links": [],
+          "datasource": "bbq",
+          "maxDataPoints": 100,
+          "interval": null,
+          "targets": [
+            {
+              "refId": "A",
+              "metrics": [
+                {
+                  "type": "avg",
+                  "id": "1",
+                  "field": "temperature_2",
+                  "settings": {},
+                  "meta": {}
+                }
+              ],
+              "dsType": "elasticsearch",
+              "bucketAggs": [
+                {
+                  "type": "date_histogram",
+                  "id": "2",
+                  "settings": {
+                    "interval": "auto",
+                    "min_doc_count": 0
+                  },
+                  "field": "created"
+                }
+              ],
+              "timeField": "created",
+              "query": "temperature_2:>0"
+            }
+          ],
+          "cacheTimeout": null,
+          "format": "celsius",
+          "prefix": "",
+          "postfix": "",
+          "nullText": null,
+          "valueMaps": [
+            {
+              "value": "null",
+              "op": "=",
+              "text": "N/A"
+            }
+          ],
+          "nullPointMode": "connected",
+          "valueName": "avg",
+          "prefixFontSize": "50%",
+          "valueFontSize": "80%",
+          "postfixFontSize": "50%",
+          "thresholds": "",
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "sparkline": {
+            "show": true,
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "fillColor": "rgba(31, 118, 189, 0.18)"
+          },
+          "timeFrom": "1h",
+          "decimals": 0
+        }
+      ]
     }
   ],
   "time": {
-    "from": "now-1d/d",
-    "to": "now-1d/d"
+    "from": "now-30m",
+    "to": "now"
   },
   "timepicker": {
+    "now": true,
     "refresh_intervals": [
       "5s",
       "10s",
@@ -308,8 +395,7 @@
       "2d",
       "7d",
       "30d"
-    ],
-    "now": true
+    ]
   },
   "templating": {
     "list": []
@@ -317,7 +403,8 @@
   "annotations": {
     "list": []
   },
+  "refresh": "10s",
   "schemaVersion": 8,
-  "version": 12,
+  "version": 26,
   "links": []
 }
